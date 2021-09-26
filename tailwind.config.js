@@ -18,7 +18,10 @@ module.exports = {
 
       black: colors.black,
       white: colors.white,
-      gray: colors.coolGray,
+      gray: {
+        ...colors.coolGray,
+        250: 'rgb(221, 221, 221)',
+      },
       red: colors.red,
       yellow: colors.amber,
       green: colors.emerald,
@@ -26,6 +29,7 @@ module.exports = {
       indigo: colors.indigo,
       purple: colors.violet,
       pink: colors.pink,
+      primary: '#00838F',
     },
     spacing: {
       px: '1px',
@@ -827,7 +831,7 @@ module.exports = {
     alignContent: ['responsive'],
     alignItems: ['responsive'],
     alignSelf: ['responsive'],
-    animation: ['responsive'],
+    animation: ['responsive', 'hover', 'group-hover'],
     appearance: ['responsive'],
     backdropBlur: ['responsive'],
     backdropBrightness: ['responsive'],
