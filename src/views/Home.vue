@@ -26,108 +26,47 @@
       </div>
     </div>
 
-    <main class="grid grid-cols-3 gap-10 main-h">
-      <section class="text-center border-t-8 border-yellow-400 bg-gray-50 shadow-md h-full rounded overflow-auto scrolll relative">
-        <h2 class="text-3xl text-gray-600 py-2 bg-yellow-400 sticky z-10 transform transition-transform ease-in-out duration-700 top-0"
+    <main class="grid lg:grid-cols-3 md:grid-cols-2 gap-10 mx-6">
+
+      <section class="text-center border-t-8 border-yellow-300 bg-gray-50 shadow-md item-height rounded overflow-auto scrolll relative">
+        <h2 class="text-3xl text-gray-600 py-2 bg-yellow-300 sticky z-10 transform transition-transform ease-in-out duration-700 top-0"
          :class="{'-translate-y-14':!(scroll.todoScroll)}">TO-DO</h2>
         <h2 class="text-3xl text-gray-600 py-4 w-full absolute top-0 z-0">TO-DO</h2>
         <draggable v-model="todoList" group="list"  animation="200" @add="resetState(todoList, 'todo')" class="grid grid-cols-1 p-5 gap-5">
           <div v-for='(item,index) in todoList' :key='item.id'>
             <ItemModal v-if="showInsideModal === item.id" v-bind="item" :index="index" @close="showInsideModal = false" @add="addListDetail"/>
-            <div class="border-2 border-gray-600 border-opacity-40 bg-gray-100 relative transition-shadow duration-500 hover:shadow-md hover:bg-gray-50">
-              <div class="absolute top-2/4 left-0 transform -translate-x-1/2 -translate-y-1/2 bg-gray-100 rounded-full hover:animate-ping" style="width:1.875rem;height:1.875rem"></div>
-              <div class="absolute top-2/4 left-0 transform -translate-x-1/2 -translate-y-1/2 bg-gray-600 rounded-full" style="height:1.875rem">
-                <font-awesome-icon icon="chevron-circle-right" rotation="180" class="text-3xl text-gray-300"/>
-              </div>
-              <div class="group absolute top-2/4 right-0 transform translate-x-1/2 -translate-y-1/2" style="width:1.875rem;height:1.875rem">
-                <div class="absolute rounded-full bg-primary w-full h-full opacity-50 group-hover:animate-ping"></div>
-                <div class="relative rounded-full bg-gray-500 w-full h-full group-hover:bg-primary">
-                  <font-awesome-icon icon="chevron-circle-right" @click="nextList(item,index)" class="text-3xl text-gray-200"/>
-                </div>
-              </div>
-              <div class="group mx-8">
-                <h3 class="text-2xl font-bold group-hover:text-primary overflow-ellipsis overflow-hidden">
-                  {{item.title}}
-                </h3>
-                <div class="mb-1 multiline-ellipsis">
-                  {{item.content}}
-                </div>
-                <div class="flex border-t-2 border-gray-600 border-opacity-40 mb-1">
-                  <button class="flex-1 p-1" @click='showInsideModal = item.id'><font-awesome-icon icon="list-ul" class="text-lg text-gray-500 group-hover:text-primary"/></button>
-                  <span class="flex-auto border-l-2 border-r-2 border-gray-600 border-opacity-40 p-1 inline-block" v-if="!(item.due_date)">新增日：{{dateObj.month}} {{dateObj.date}} </span>
-                  <span class="flex-auto border-l-2 border-r-2 border-gray-600 border-opacity-40 p-1 inline-block text-red-600" v-if="item.due_date">期限日：{{item.due_date | dateFilter}} </span>
-                  <button class="flex-1 p-1" @click='removeList(item,index)'><font-awesome-icon icon="trash-alt" class="text-lg text-gray-500 group-hover:text-red-500"/></button>
-                </div>
-              </div>
-            </div>
+            <ItemFrame v-bind="item" :index="index" :month="dateObj.month" :date="dateObj.date" @show-modal="showInsideModal = item.id"
+             @remove-item="removeItem(item,index)" @last-list="lastList(item,index)" @next-list="nextList(item,index)"/>
           </div>
         </draggable>
       </section>
 
-      <section class="text-center border-t-8 border-blue-300 bg-gray-50
-       shadow-md h-full rounded overflow-auto scrolll relative">
-        <h2 class="text-3xl text-gray-600 py-2 bg-blue-300 sticky z-10
-         transform transition-transform ease-in-out duration-700 top-0"
+      <section class="text-center border-t-8 border-blue-300 bg-gray-50 shadow-md item-height rounded overflow-auto scrolll relative">
+        <h2 class="text-3xl text-gray-600 py-2 bg-blue-300 sticky z-10 transform transition-transform ease-in-out duration-700 top-0"
          :class="{'-translate-y-14':!(scroll.doingScroll)}">DOING</h2>
         <h2 class="text-3xl text-gray-600 py-4 w-full absolute top-0 z-0">DOING</h2>
         <draggable v-model="doingList" group="list" animation="200" @add="resetState(doingList, 'doing')" class="grid grid-cols-1 p-5 gap-5">
           <div v-for='(item,index) in doingList' :key='item.id'>
             <ItemModal v-if="showInsideModal === item.id" v-bind="item" :index="index" @close="showInsideModal = false" @add="addListDetail"/>
-            <div class="border-2 border-gray-600 border-opacity-40 bg-gray-100 relative transition-shadow duration-500 hover:shadow-md hover:bg-gray-50">
-              <div class="group absolute top-2/4 left-0 transform -translate-x-1/2 -translate-y-1/2" style="width:1.875rem;height:1.875rem">
-                <div class="absolute rounded-full bg-primary w-full h-full opacity-50 group-hover:animate-ping"></div>
-                <div class="relative rounded-full bg-gray-500 w-full h-full group-hover:bg-primary">
-                  <font-awesome-icon icon="chevron-circle-right" rotation="180" @click="item.state = 'doing'" class="text-3xl text-gray-200"/>
-                </div>
-              </div>
-              <div class="group absolute top-2/4 right-0 transform translate-x-1/2 -translate-y-1/2" style="width:1.875rem;height:1.875rem">
-                <div class="absolute rounded-full bg-primary w-full h-full opacity-50 group-hover:animate-ping"></div>
-                <div class="relative rounded-full bg-gray-500 w-full h-full group-hover:bg-primary">
-                  <font-awesome-icon icon="chevron-circle-right" @click="item.state = 'doing'" class="text-3xl text-gray-200"/>
-                </div>
-              </div>
-              <div class="group mx-8">
-                <h3 class="text-2xl font-bold group-hover:text-primary overflow-ellipsis overflow-hidden">
-                  {{item.title}}
-                </h3>
-                <div class="mb-1 multiline-ellipsis">
-                  {{item.content}}
-                </div>
-                <div class="flex border-t-2 border-gray-600 border-opacity-40 mb-1">
-                  <button class="flex-1 p-1" @click='showInsideModal = item.id'><font-awesome-icon icon="list-ul" class="text-lg text-gray-500 group-hover:text-primary"/></button>
-                  <span class="flex-auto border-l-2 border-r-2 border-gray-600 border-opacity-40 p-1 inline-block" v-if="!(item.due_date)">新增日：{{dateObj.month}} {{dateObj.date}} </span>
-                  <span class="flex-auto border-l-2 border-r-2 border-gray-600 border-opacity-40 p-1 inline-block text-red-600" v-if="item.due_date">期限日：{{item.due_date | dateFilter}} </span>
-                  <button class="flex-1 p-1" @click='removeList(item,index)'><font-awesome-icon icon="trash-alt" class="text-lg text-gray-500 group-hover:text-red-500"/></button>
-                </div>
-              </div>
-            </div>
+            <ItemFrame v-bind="item" :index="index" :month="dateObj.month" :date="dateObj.date" @show-modal="showInsideModal = item.id"
+             @remove-item="removeItem(item,index)" @last-list="lastList(item,index)" @next-list="nextList(item,index)"/>
           </div>
         </draggable>
       </section>
 
-      <!-- <section class="text-center border-t-8  bg-gray-50
-       shadow-md h-full rounded">
-        DOING
-        <ul>
-          <li v-for='item in doingList' :key='item.id' >
-            <input type='checkbox' v-model='item.complete'>
-            <span :class='{dele:item.complete}' >{{item.content}}</span>
-            <button @click='removeList(item.id)'>移除</button>
-          </li>
-        </ul>
+      <section class="text-center border-t-8 border-green-300 bg-gray-50 shadow-md item-height rounded overflow-auto scrolll relative">
+        <h2 class="text-3xl text-gray-600 py-2 bg-green-300 sticky z-10 transform transition-transform ease-in-out duration-700 top-0"
+         :class="{'-translate-y-14':!(scroll.doneScroll)}">DOING</h2>
+        <h2 class="text-3xl text-gray-600 py-4 w-full absolute top-0 z-0">DONE</h2>
+        <draggable v-model="doneList" group="list" animation="200" @add="resetState(doneList, 'done')" class="grid grid-cols-1 p-5 gap-5">
+          <div v-for='(item,index) in doneList' :key='item.id'>
+            <ItemModal v-if="showInsideModal === item.id" v-bind="item" :index="index" @close="showInsideModal = false" @add="addListDetail"/>
+            <ItemFrame v-bind="item" :index="index" :month="dateObj.month" :date="dateObj.date" @show-modal="showInsideModal = item.id"
+             @remove-item="removeItem(item,index)" @last-list="lastList(item,index)" @next-list="nextList(item,index)"/>
+          </div>
+        </draggable>
       </section>
 
-      <section class="text-center border-t-8 border-green-300 bg-gray-50
-       shadow-md h-full rounded">
-        DONE
-        <ul>
-          <li v-for='item in doneList' :key='item.id' >
-            <input type='checkbox' v-model='item.complete'>
-            <span :class='{dele:item.complete}' >{{item.content}}</span>
-            <button @click='removeList(item.id)'>移除</button>
-          </li>
-        </ul>
-      </section> -->
     </main>
   </div>
 </template>
@@ -135,6 +74,7 @@
 <script>
 import draggable from 'vuedraggable';
 import ItemModal from '@/components/ItemModal.vue';
+import ItemFrame from '@/components/ItemFrame.vue';
 
 export default {
   name: 'Home',
@@ -188,6 +128,7 @@ export default {
   components: {
     draggable,
     ItemModal,
+    ItemFrame,
   },
   // computed: {
   //   todoList() {
@@ -228,11 +169,26 @@ export default {
         document.getElementById('inputText').value = '';
       });
     },
+    lastList(item, index) {
+      if (item.state === 'doing') {
+        this.doingList.splice(index, 1);
+        item.state = 'todo';
+        this.todoList.push(item);
+      } else {
+        this.doneList.splice(index, 1);
+        item.state = 'doing';
+        this.doingList.push(item);
+      }
+    },
     nextList(item, index) {
       if (item.state === 'todo') {
         this.todoList.splice(index, 1);
         item.state = 'doing';
         this.doingList.push(item);
+      } else {
+        this.doingList.splice(index, 1);
+        item.state = 'done';
+        this.doneList.push(item);
       }
     },
     addListDetail(modalObj, index) {
@@ -280,7 +236,7 @@ export default {
         due_date: '',
       };
     },
-    removeList(item, index) {
+    removeItem(item, index) {
       switch (item.state) {
         case 'todo':
           this.todoList.splice(index, 1);
@@ -304,8 +260,9 @@ export default {
 </script>
 
 <style lang="scss">
-  .main-h {
-    height: 30rem;
+  .item-height {
+    max-height: 30rem;
+    min-height: 5rem;
   }
   .multiline-ellipsis {
     display: -webkit-box;

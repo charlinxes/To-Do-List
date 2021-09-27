@@ -12,7 +12,7 @@
           <label for="description" class="text-xl mx-3">說明</label>
           <textarea class="border border-gray-500 rounded p-1 resize-none focus:outline-none focus:ring focus:border-blue-300" name="description" id="description" rows="5" cols="26" placeholder="請輸入內容" v-model="modalObj.description"></textarea>
         </div>
-        <div class="flex items-center mb-5" v-if="!index">
+        <div class="flex items-center mb-5" v-if="!index && !(index === 0)">
           <label for="state" class="text-xl mx-3">狀態</label>
           <div class="flex justify-around w-2/3">
             <label><input type="radio" class="align-middle" name="state" value="todo" v-model="modalObj.state"/> todo</label>
