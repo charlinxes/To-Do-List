@@ -1,5 +1,7 @@
 <template>
-  <div class="border-2 border-gray-600 border-opacity-40 relative transition-shadow duration-500 hover:shadow-md" :class="changeColor">
+  <div class="border-2 border-gray-600 border-opacity-40 relative transition-shadow duration-500 hover:shadow-md"
+    :class="{'bg-yellow-100': state === 'todo','hover:bg-yellow-50': state === 'todo','bg-blue-100': state === 'doing',
+    'hover:bg-blue-50': state === 'doing', 'bg-green-100': state === 'done', 'hover:bg-green-50': state === 'done'}">
     <div class="group absolute top-2/4 left-0 transform -translate-x-1/2 -translate-y-1/2" v-if="!(state === 'todo')" style="width:1.875rem;height:1.875rem">
       <div class="absolute rounded-full bg-primary w-full h-full opacity-50 group-hover:animate-ping"></div>
       <div class="relative rounded-full bg-gray-500 w-full h-full group-hover:bg-primary">
@@ -43,7 +45,6 @@ export default {
     },
     state: {
       type: String,
-      default: 'todo',
     },
     due_date: {
       type: String,
@@ -64,18 +65,6 @@ export default {
       type: Number,
       required: true,
     },
-  },
-  data() {
-    return {
-      changeColor: {
-        'bg-yellow-100': this.state === 'todo',
-        'hover:bg-yellow-50': this.state === 'todo',
-        'bg-blue-100': this.state === 'doing',
-        'hover:bg-blue-50': this.state === 'doing',
-        'bg-green-100': this.state === 'done',
-        'hover:bg-green-50': this.state === 'done',
-      },
-    };
   },
 };
 </script>

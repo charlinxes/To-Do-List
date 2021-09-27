@@ -2,14 +2,14 @@
   <div class="container mx-auto">
     <header class="w-full h-20 flex justify-end items-center mb-10">
       <div class="flex">
-        <div class="flex items-center justify-between mr-4">
+        <div class="flex items-center justify-between mr-3">
           <p class="text-5xl mr-1">{{dateObj.date}}</p>
           <p class="flex flex-col">
             <span>{{dateObj.month}}</span>
             <span>{{dateObj.year}}</span>
           </p>
         </div>
-        <button type="button" class="bg-transparent border-2 border-black px-3 rounded-full hover:bg-gray-300" @click="showModal = true;">
+        <button type="button" class="bg-transparent border-2 border-black px-3 rounded-full hover:bg-gray-300 mr-3" @click="showModal = true;">
           新增具體項目
         </button>
       </div>
@@ -18,21 +18,21 @@
     <!-- Modal -->
     <ItemModal v-if="showModal" @close="showModal = false" @add="addListDetail"/>
 
-    <h1 class="text-center text-7xl font-extrabold mb-10">TO - DO - LIST</h1>
-    <div class="w-2/4 mx-auto h-14 mb-10">
+    <h1 class="text-center md:text-7xl text-5xl font-extrabold mb-10">TO - DO - LIST</h1>
+    <div class="md:w-2/4 w-3/4 mx-auto h-14 mb-10">
       <div class="w-full h-full rounded-full bg-white px-10 shadow-md hover:shadow-lg">
-        <input type="text" class="w-full h-full focus:outline-none text-xl" id="inputText"
+        <input type="text" class="w-full h-full focus:outline-none text-xl" id="inputText" placeholder="請輸入新增項目"
          @keyup.enter='addList'/>
       </div>
     </div>
 
-    <main class="grid lg:grid-cols-3 md:grid-cols-2 gap-10 mx-6">
+    <main class="grid lg:grid-cols-3 md:grid-cols-2 gap-10 md:mx-6 mb-12 mx-10">
 
-      <section class="text-center border-t-8 border-yellow-300 bg-gray-50 shadow-md item-height rounded overflow-auto scrolll relative">
+      <section class="max-h-99 text-center border-t-8 border-yellow-300 bg-gray-50 shadow-md rounded overflow-auto scrolll relative">
         <h2 class="text-3xl text-gray-600 py-2 bg-yellow-300 sticky z-10 transform transition-transform ease-in-out duration-700 top-0"
          :class="{'-translate-y-14':!(scroll.todoScroll)}">TO-DO</h2>
         <h2 class="text-3xl text-gray-600 py-4 w-full absolute top-0 z-0">TO-DO</h2>
-        <draggable v-model="todoList" group="list"  animation="200" @add="resetState(todoList, 'todo')" class="grid grid-cols-1 p-5 gap-5">
+        <draggable v-model="todoList" group="list" delay="200" animation="200" @add="resetState(todoList, 'todo')" class="grid grid-cols-1 p-5 gap-5">
           <div v-for='(item,index) in todoList' :key='item.id'>
             <ItemModal v-if="showInsideModal === item.id" v-bind="item" :index="index" @close="showInsideModal = false" @add="addListDetail"/>
             <ItemFrame v-bind="item" :index="index" :month="dateObj.month" :date="dateObj.date" @show-modal="showInsideModal = item.id"
@@ -41,11 +41,11 @@
         </draggable>
       </section>
 
-      <section class="text-center border-t-8 border-blue-300 bg-gray-50 shadow-md item-height rounded overflow-auto scrolll relative">
+      <section class="max-h-99 text-center border-t-8 border-blue-300 bg-gray-50 shadow-md rounded overflow-auto scrolll relative h-auto">
         <h2 class="text-3xl text-gray-600 py-2 bg-blue-300 sticky z-10 transform transition-transform ease-in-out duration-700 top-0"
          :class="{'-translate-y-14':!(scroll.doingScroll)}">DOING</h2>
         <h2 class="text-3xl text-gray-600 py-4 w-full absolute top-0 z-0">DOING</h2>
-        <draggable v-model="doingList" group="list" animation="200" @add="resetState(doingList, 'doing')" class="grid grid-cols-1 p-5 gap-5">
+        <draggable v-model="doingList" group="list"  delay="200" animation="200" @add="resetState(doingList, 'doing')" class="grid grid-cols-1 p-5 gap-5">
           <div v-for='(item,index) in doingList' :key='item.id'>
             <ItemModal v-if="showInsideModal === item.id" v-bind="item" :index="index" @close="showInsideModal = false" @add="addListDetail"/>
             <ItemFrame v-bind="item" :index="index" :month="dateObj.month" :date="dateObj.date" @show-modal="showInsideModal = item.id"
@@ -54,11 +54,11 @@
         </draggable>
       </section>
 
-      <section class="text-center border-t-8 border-green-300 bg-gray-50 shadow-md item-height rounded overflow-auto scrolll relative">
+      <section class="max-h-99 text-center border-t-8 border-green-300 bg-gray-50 shadow-md rounded overflow-auto scrolll relative">
         <h2 class="text-3xl text-gray-600 py-2 bg-green-300 sticky z-10 transform transition-transform ease-in-out duration-700 top-0"
          :class="{'-translate-y-14':!(scroll.doneScroll)}">DOING</h2>
         <h2 class="text-3xl text-gray-600 py-4 w-full absolute top-0 z-0">DONE</h2>
-        <draggable v-model="doneList" group="list" animation="200" @add="resetState(doneList, 'done')" class="grid grid-cols-1 p-5 gap-5">
+        <draggable v-model="doneList" group="list" delay="200" animation="200" @add="resetState(doneList, 'done')" class="grid grid-cols-1 p-5 gap-5">
           <div v-for='(item,index) in doneList' :key='item.id'>
             <ItemModal v-if="showInsideModal === item.id" v-bind="item" :index="index" @close="showInsideModal = false" @add="addListDetail"/>
             <ItemFrame v-bind="item" :index="index" :month="dateObj.month" :date="dateObj.date" @show-modal="showInsideModal = item.id"
@@ -95,13 +95,6 @@ export default {
       },
       showModal: false,
       showInsideModal: false,
-      // modalObj: {
-      //   id: '',
-      //   title: '',
-      //   description: '',
-      //   state: '',
-      //   due_date: '',
-      // },
     };
   },
   created() {
@@ -130,21 +123,7 @@ export default {
     ItemModal,
     ItemFrame,
   },
-  // computed: {
-  //   todoList() {
-  //     return this.workList.filter((item) => item.state === 'todo');
-  //   },
-  //   doingList() {
-  //     return this.workList.filter((item) => item.state === 'doing');
-  //   },
-  //   doneList() {
-  //     return this.workList.filter((item) => item.state === 'done');
-  //   },
-  // },
   methods: {
-    // handleScroll(e, index) {
-    //   // this.scrollTop = e.target.scrollTop;
-    // },
     getTime() {
       const mydate = new Date();
       const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
@@ -198,17 +177,14 @@ export default {
         switch (modalObj.state) {
           case 'todo':
             this.todoList.push(modalObj);
-            this.resetModalObj();
             this.showModal = false;
             break;
           case 'doing':
             this.doingList.push(modalObj);
-            this.resetModalObj();
             this.showModal = false;
             break;
           default:
             this.doneList.push(modalObj);
-            this.resetModalObj();
             this.showModal = false;
         }
       } else {
@@ -226,15 +202,6 @@ export default {
             this.showInsideModal = false;
         }
       }
-    },
-    resetModalObj() {
-      this.modalObj = {
-        id: '',
-        title: '',
-        description: '',
-        state: '',
-        due_date: '',
-      };
     },
     removeItem(item, index) {
       switch (item.state) {
@@ -260,10 +227,6 @@ export default {
 </script>
 
 <style lang="scss">
-  .item-height {
-    max-height: 30rem;
-    min-height: 5rem;
-  }
   .multiline-ellipsis {
     display: -webkit-box;
     -webkit-box-orient: vertical;
