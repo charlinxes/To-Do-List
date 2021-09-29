@@ -1,34 +1,21 @@
 <template>
   <div class="container mx-auto">
-    <header class="w-full h-20 flex justify-end items-center mb-10">
-      <div class="flex">
-        <div class="flex items-center justify-between mr-3">
-          <p class="text-5xl mr-1">{{dateObj.date}}</p>
-          <p class="flex flex-col">
-            <span>{{dateObj.month}}</span>
-            <span>{{dateObj.year}}</span>
-          </p>
-        </div>
-        <button type="button" class="bg-transparent border-2 border-black px-3 rounded-full hover:bg-gray-300 mr-3" @click="showModal = true;">
-          新增具體項目
-        </button>
-      </div>
-    </header>
+    <Header v-bind="dateObj" @show-modal="showModal = true"/>
 
     <!-- Modal -->
     <ItemModal v-if="showModal" @close="showModal = false" @add="addListDetail"/>
 
     <h1 class="text-center md:text-7xl text-5xl font-extrabold mb-10">TO - DO - LIST</h1>
-    <div class="md:w-2/4 w-3/4 mx-auto h-14 mb-10">
+    <div class="lg:w-2/4 md:w-3/5 w-3/4 mx-auto h-14 mb-10">
       <div class="w-full h-full rounded-full bg-white px-10 shadow-md hover:shadow-lg">
-        <input type="text" class="w-full h-full focus:outline-none text-xl" id="inputText" placeholder="請輸入新增項目"
-         @keyup.enter='addList'/>
+        <input type="text" class="w-full h-full focus:outline-none text-xl" id="inputText"
+         placeholder="請輸入新增項目" @keyup.enter='addListBrief'/>
       </div>
     </div>
 
     <main class="grid lg:grid-cols-3 md:grid-cols-2 gap-10 md:mx-6 mb-12 mx-10">
 
-      <section class="max-h-99 text-center border-t-8 border-yellow-300 bg-gray-50 shadow-md rounded overflow-auto scrolll relative">
+      <section class="max-h-99 text-center border-t-8 border-yellow-300 bg-gray-50 shadow-md rounded overflow-y-auto scroll relative">
         <h2 class="text-3xl text-gray-600 py-2 bg-yellow-300 sticky z-10 transform transition-transform ease-in-out duration-700 top-0"
          :class="{'-translate-y-14':!(scroll.todoScroll)}">TO-DO</h2>
         <h2 class="text-3xl text-gray-600 py-4 w-full absolute top-0 z-0">TO-DO</h2>
@@ -41,7 +28,7 @@
         </draggable>
       </section>
 
-      <section class="max-h-99 text-center border-t-8 border-blue-300 bg-gray-50 shadow-md rounded overflow-auto scrolll relative h-auto">
+      <section class="max-h-99 text-center border-t-8 border-blue-300 bg-gray-50 shadow-md rounded overflow-y-auto scroll relative h-auto">
         <h2 class="text-3xl text-gray-600 py-2 bg-blue-300 sticky z-10 transform transition-transform ease-in-out duration-700 top-0"
          :class="{'-translate-y-14':!(scroll.doingScroll)}">DOING</h2>
         <h2 class="text-3xl text-gray-600 py-4 w-full absolute top-0 z-0">DOING</h2>
@@ -54,7 +41,7 @@
         </draggable>
       </section>
 
-      <section class="max-h-99 text-center border-t-8 border-green-300 bg-gray-50 shadow-md rounded overflow-auto scrolll relative">
+      <section class="max-h-99 text-center border-t-8 border-green-300 bg-gray-50 shadow-md rounded overflow-y-auto scroll relative">
         <h2 class="text-3xl text-gray-600 py-2 bg-green-300 sticky z-10 transform transition-transform ease-in-out duration-700 top-0"
          :class="{'-translate-y-14':!(scroll.doneScroll)}">DOING</h2>
         <h2 class="text-3xl text-gray-600 py-4 w-full absolute top-0 z-0">DONE</h2>
@@ -66,13 +53,13 @@
           </div>
         </draggable>
       </section>
-
     </main>
   </div>
 </template>
 
 <script>
 import draggable from 'vuedraggable';
+import Header from '@/components/Header.vue';
 import ItemModal from '@/components/ItemModal.vue';
 import ItemFrame from '@/components/ItemFrame.vue';
 
@@ -99,9 +86,18 @@ export default {
   },
   created() {
     this.getTime();
+    if (localStorage.getItem('todoList')) {
+      this.todoList = this.storage('todoList');
+    }
+    if (localStorage.getItem('doingList')) {
+      this.doingList = this.storage('doingList');
+    }
+    if (localStorage.getItem('doneList')) {
+      this.doneList = this.storage('doneList');
+    }
   },
   mounted() {
-    const scrollArray = [...document.querySelectorAll('.scrolll')];
+    const scrollArray = [...document.querySelectorAll('.scroll')];
     scrollArray.forEach((currentValue, index) => currentValue.addEventListener('scroll', (e) => {
       switch (index) {
         case 0:
@@ -120,6 +116,7 @@ export default {
   },
   components: {
     draggable,
+    Header,
     ItemModal,
     ItemFrame,
   },
@@ -132,7 +129,7 @@ export default {
       this.dateObj.month = months[mydate.getMonth()];
       this.dateObj.date = mydate.getDate();
     },
-    addList(event) {
+    addListBrief(event) {
       if (!event.target.value) return;
       const timeStamp = Math.floor(Date.now());
       const msg = event.target.value.trim();
@@ -144,31 +141,10 @@ export default {
         due_date: '',
       };
       this.todoList.push(newItem);
+      this.storage('todoList', this.todoList);
       this.$nextTick(() => {
         document.getElementById('inputText').value = '';
       });
-    },
-    lastList(item, index) {
-      if (item.state === 'doing') {
-        this.doingList.splice(index, 1);
-        item.state = 'todo';
-        this.todoList.push(item);
-      } else {
-        this.doneList.splice(index, 1);
-        item.state = 'doing';
-        this.doingList.push(item);
-      }
-    },
-    nextList(item, index) {
-      if (item.state === 'todo') {
-        this.todoList.splice(index, 1);
-        item.state = 'doing';
-        this.doingList.push(item);
-      } else {
-        this.doingList.splice(index, 1);
-        item.state = 'done';
-        this.doneList.push(item);
-      }
     },
     addListDetail(modalObj, index) {
       if (!modalObj.id) {
@@ -178,41 +154,80 @@ export default {
           case 'todo':
             this.todoList.push(modalObj);
             this.showModal = false;
+            this.storage('todoList', this.todoList);
             break;
           case 'doing':
             this.doingList.push(modalObj);
             this.showModal = false;
+            this.storage('doingList', this.doingList);
             break;
           default:
             this.doneList.push(modalObj);
             this.showModal = false;
+            this.storage('doneList', this.doneList);
         }
       } else {
         switch (modalObj.state) {
           case 'todo':
             this.todoList.splice(index, 1, modalObj);
             this.showInsideModal = false;
+            this.storage('todoList', this.todoList);
             break;
           case 'doing':
             this.doingList.splice(index, 1, modalObj);
             this.showInsideModal = false;
+            this.storage('doingList', this.doingList);
             break;
           default:
             this.doneList.splice(index, 1, modalObj);
             this.showInsideModal = false;
+            this.storage('doneList', this.doneList);
         }
+      }
+    },
+    lastList(item, index) {
+      if (item.state === 'doing') {
+        this.doingList.splice(index, 1);
+        item.state = 'todo';
+        this.todoList.push(item);
+        this.storage('todoList', this.todoList);
+        this.storage('doingList', this.doingList);
+      } else {
+        this.doneList.splice(index, 1);
+        item.state = 'doing';
+        this.doingList.push(item);
+        this.storage('doingList', this.doingList);
+        this.storage('doneList', this.doneList);
+      }
+    },
+    nextList(item, index) {
+      if (item.state === 'todo') {
+        this.todoList.splice(index, 1);
+        item.state = 'doing';
+        this.doingList.push(item);
+        this.storage('todoList', this.todoList);
+        this.storage('doingList', this.doingList);
+      } else {
+        this.doingList.splice(index, 1);
+        item.state = 'done';
+        this.doneList.push(item);
+        this.storage('doingList', this.doingList);
+        this.storage('doneList', this.doneList);
       }
     },
     removeItem(item, index) {
       switch (item.state) {
         case 'todo':
           this.todoList.splice(index, 1);
+          this.storage('todoList', this.todoList);
           break;
         case 'doing':
           this.doingList.splice(index, 1);
+          this.storage('doingList', this.doingList);
           break;
         default:
           this.doneList.splice(index, 1);
+          this.storage('doneList', this.doneList);
       }
     },
     resetState(currentArray, state) {
@@ -222,15 +237,18 @@ export default {
         }
       });
     },
+    storage(key, value) {
+      if (!key) {
+        return false;
+      }
+      if (key && !value) {
+        return JSON.parse(localStorage.getItem(key));
+      }
+      if (key && value) {
+        localStorage.setItem(key, JSON.stringify(value));
+      }
+      return false;
+    },
   },
 };
 </script>
-
-<style lang="scss">
-  .multiline-ellipsis {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-    overflow: hidden;
-  }
-</style>

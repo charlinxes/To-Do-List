@@ -10,8 +10,6 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 // 自己撰寫的放下方
 import App from './App.vue';
-import router from './router';
-import store from './store';
 import './assets/tailwind.css';
 import dateFilter from './filters/dateFilter';
 
@@ -24,7 +22,5 @@ Vue.component('font-awesome-icon', FontAwesomeIcon);
 Vue.filter('dateFilter', dateFilter);
 
 new Vue({
-  router,
-  store,
   render: (h) => h(App),
 }).$mount('#app');
