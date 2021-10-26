@@ -8,18 +8,22 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+
 // 自己撰寫的放下方
 import App from './App.vue';
 import './assets/tailwind.css';
-import dateFilter from './filters/dateFilter';
 
 library.add(
   faChevronCircleRight, faListUl, faTrashAlt,
 );
 
+dayjs.extend(customParseFormat);
+
 Vue.config.productionTip = false;
 Vue.component('font-awesome-icon', FontAwesomeIcon);
-Vue.filter('dateFilter', dateFilter);
+Vue.prototype.$dayjs = dayjs;
 
 new Vue({
   render: (h) => h(App),

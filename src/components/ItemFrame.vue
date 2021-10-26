@@ -28,7 +28,7 @@
         <button class="flex-1 p-1" @click="$emit('show-modal')"><font-awesome-icon icon="list-ul" class="text-lg text-gray-500"
          :class="{'group-hover:text-yellow-500': state === 'todo','group-hover:text-blue-500': state === 'doing','group-hover:text-primary': state === 'done'}"/></button>
         <span class="flex-auto border-l-2 border-r-2 border-gray-600 border-opacity-40 p-1 inline-block" v-if="!(due_date)">新增日：{{month}} {{date}} </span>
-        <span class="flex-auto border-l-2 border-r-2 border-gray-600 border-opacity-40 p-1 inline-block text-red-400" v-if="due_date">期限日：{{due_date | dateFilter}} </span>
+        <span class="flex-auto border-l-2 border-r-2 border-gray-600 border-opacity-40 p-1 inline-block text-red-400" v-if="due_date">期限日：{{dueDate}} </span>
         <button class="flex-1 p-1" @click="$emit('remove-item')"><font-awesome-icon icon="trash-alt" class="text-lg text-gray-500 group-hover:text-red-500"/></button>
       </div>
     </div>
@@ -68,6 +68,11 @@ export default {
     date: {
       type: Number,
       required: true,
+    },
+  },
+  computed: {
+    dueDate() {
+      return this.$dayjs(`${this.due_date}`, 'YYYY-MM-DD').format('MMM DD');
     },
   },
 };

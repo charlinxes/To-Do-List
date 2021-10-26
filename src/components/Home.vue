@@ -122,12 +122,9 @@ export default {
   },
   methods: {
     getTime() {
-      const mydate = new Date();
-      const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
-        'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-      this.dateObj.year = mydate.getFullYear();
-      this.dateObj.month = months[mydate.getMonth()];
-      this.dateObj.date = mydate.getDate();
+      this.dateObj.year = this.$dayjs().year();
+      this.dateObj.month = this.$dayjs().format('MMM');
+      this.dateObj.date = this.$dayjs().date();
     },
     addListBrief(event) {
       if (!event.target.value) return;
